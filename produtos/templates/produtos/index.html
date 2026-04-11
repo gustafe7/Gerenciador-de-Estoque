@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Produtos</title>
+    {% load static %}
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        nav {
+            background: #fff;
+            border-bottom: 1px solid #ebebeb;
+            padding: 0 2rem;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-icon {
+            width: 32px;
+            height: 32px;
+            background: #6c63ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-icon svg { width: 18px; height: 18px; fill: #fff; }
+
+        .nav-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background: #ece9ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: #6c63ff;
+        }
+
+        .username {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .btn-logout {
+            font-size: 13px;
+            color: #888;
+            text-decoration: none;
+            padding: 5px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover { background: #f5f5f5; color: #333; }
+
+        /* Main */
+        main {
+            max-width: 640px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Form card */
+        .form-card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-card h2 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 1rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .form-row input {
+            flex: 1;
+            padding: 10px 14px;
+            font-size: 14px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.2s;
+            color: #1a1a2e;
+            background: #fafafa;
+        }
+
+        .form-row input:focus { border-color: #6c63ff; background: #fff; }
+
+        .form-row input[type="number"] { max-width: 140px; }
+
+        .btn-add {
+            padding: 10px 20px;
+            background: #6c63ff;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-add:hover { background: #5848c2; }
+        .btn-add:active { transform: scale(0.98); }
+
+        /* Lista */
+        .list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            padding: 0 0.25rem;
+        }
+
+        .list-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .count-badge {
+            font-size: 12px;
+            background: #ece9ff;
+            color: #6c63ff;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        #lista-produtos { list-style: none; }
+
+        #lista-produtos li {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: box-shadow 0.2s;
+        }
+
+        #lista-produtos li:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.09); }
+
+        .produto-icon {
+            width: 36px;
+            height: 36px;
+            background: #ece9ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+
+        .produto-info { flex: 1; }
+
+        .produto-nome {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a1a2e;
+        }
+
+        .produto-preco {
+            font-size: 13px;
+            color: #6c63ff;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .btn-excluir {
+            background: none;
+            border: 1px solid #ffcdd2;
+            color: #e53935;
+            border-radius: 8px;
+            padding: 5px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-excluir:hover { background: #ffebee; }
+
+        .empty {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        @media (max-width: 500px) {
+            nav { padding: 0 1rem; }
+            .username { display: none; }
+            .form-row { flex-wrap: wrap; }
+            .form-row input[type="number"] { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-brand">
+            <div class="nav-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zm-9 8H5v-2h6v2zm8 0h-6v-2h6v2zm0-4H5V9h14v2z"/>
+                </svg>
+            </div>
+            <span class="nav-title">Gerenciador de Produtos</span>
+        </div>
+        <div class="nav-user">
+            <div class="avatar">{{ request.user.username|first|upper }}</div>
+            <span class="username">{{ request.user.username }}</span>
+            <a href="{% url 'logout' %}" class="btn-logout">Sair</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="form-card">
+            <h2>Novo produto</h2>
+            <form id="form-produto">
+                {% csrf_token %}
+                <div class="form-row">
+                    <input type="text" id="nome" placeholder="Nome do produto" required>
+                    <input type="number" id="preco" placeholder="Preço (R$)" step="0.01" min="0" required>
+                    <button type="submit" class="btn-add">+ Adicionar</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="list-header">
+            <span class="list-title">Produtos cadastrados</span>
+            <span class="count-badge" id="contador">0</span>
+        </div>
+
+        <ul id="lista-produtos">
+            <li class="empty" id="empty-msg">Nenhum produto cadastrado ainda.</li>
+        </ul>
+    </main>
+
+    <script src="{% static 'script.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f4f4f9;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding-top: 50px;
+}
+
+.container {
+    background-color: #fff;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+}
+
+/* Header com usuário e logout */
+.header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.header-actions h1 {
+    margin-bottom: 0;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.btn-logout {
+    background-color: #eee;
+    color: #333;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.btn-logout:hover {
+    background-color: #ddd;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+form input {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+form input:focus {
+    border-color: #6c63ff;
+    outline: none;
+}
+
+form button {
+    padding: 12px;
+    background-color: #6c63ff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+form button:hover {
+    background-color: #5848c2;
+}
+
+/* Erro login */
+.erro {
+    background: #fff0f0;
+    color: #c0392b;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+ul {
+    list-style: none;
+}
+
+ul li {
+    padding: 12px 15px;
+    background-color: #f9f9fc;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+ul li:hover {
+    background-color: #ececff;
+}
+
+button.excluir {
+    background-color: #ff4d4f;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+button.excluir:hover {
+    background-color: #c0392b;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+    }
+
+    form input, form button {
+        font-size: 14px;
+    }
+
+    button.excluir {
+        font-size: 12px;
+        padding: 5px 8px;
+    }
+}
