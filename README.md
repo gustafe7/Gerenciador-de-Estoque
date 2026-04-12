@@ -111,6 +111,15 @@ Admin em: http://localhost:8000/admin
 | `DB_HOST` | Host do banco (padrão: localhost) |
 | `DB_PORT` | Porta do banco (padrão: 5432) |
 
+## Recuperação de senha
+
+O sistema não possui recuperação automática de senha por email. Caso um usuário esqueça a senha, o administrador pode redefini-la pelo painel admin:
+
+1. Acesse `/admin`
+2. Vá em **Autenticação e Autorização → Usuários**
+3. Clique no usuário desejado
+4. Clique em **"Alterar senha"** no canto superior direito
+
 ## Como usar
 
 1. Acesse `/registro/` e crie sua conta
