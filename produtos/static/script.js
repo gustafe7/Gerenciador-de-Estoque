@@ -1,7 +1,12 @@
+// ── Gerenciador de Estoque — script principal ─────────────────────────────────
+// Responsável por toda a interação do frontend com a API REST do backend.
+// Utiliza fetch() para comunicação assíncrona sem recarregar a página.
+
 const form = document.getElementById('form-produto');
 const lista = document.getElementById('lista-produtos');
 const contador = document.getElementById('contador');
 
+// Recupera o CSRF token do cookie — obrigatório para requisições POST/PUT/DELETE no Django
 function getCsrfToken() {
     return document.cookie
         .split(';')
@@ -10,14 +15,17 @@ function getCsrfToken() {
         ?.split('=')[1] || '';
 }
 
+// Atualiza o badge de contagem de produtos no cabeçalho da lista
 function atualizarContador(n) {
     if (contador) contador.textContent = n;
 }
 
+// Retorna o HTML do estado vazio quando não há produtos
 function emptyState() {
     return `<li class="empty" id="empty-msg" style="list-style:none;text-align:center;padding:2.5rem 1rem;color:#aaa;font-size:14px;background:none;box-shadow:none;">Nenhum produto cadastrado ainda.</li>`;
 }
 
+// Busca os produtos do backend e renderiza a lista
 async function carregarProdutos() {
     const resposta = await fetch('/produtos');
     const produtos = await resposta.json();
@@ -41,6 +49,7 @@ async function carregarProdutos() {
     atualizarContador(produtos.length);
 }
 
+// Envia o formulário para criar um novo produto via POST
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const nome = document.getElementById('nome').value;
@@ -64,6 +73,7 @@ form.addEventListener('submit', async (e) => {
     }
 });
 
+// Delegação de evento para o botão excluir — evita múltiplos listeners
 lista.addEventListener('click', async (e) => {
     if (e.target.classList.contains('excluir')) {
         const li = e.target.closest('li');
@@ -85,5 +95,5 @@ lista.addEventListener('click', async (e) => {
     }
 });
 
+// Carrega os produtos assim que a página termina de carregar
 window.onload = carregarProdutos;
-

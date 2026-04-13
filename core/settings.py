@@ -1,12 +1,12 @@
 from pathlib import Path
 import os
-from dotenv import load_dotenv
 
-load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Em produção, defina uma SECRET_KEY forte e única no arquivo .env
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-troque-em-producao')
 
+# Nunca deixe DEBUG=True em produção — expõe informações sensíveis
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost 127.0.0.1').split()
@@ -82,4 +82,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
-APPEND_SLASH = False

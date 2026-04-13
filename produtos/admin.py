@@ -1,3 +1,7 @@
+# Configuração do painel administrativo do Django.
+# Permite gerenciar todos os dados do sistema via /admin.
+# Apenas superusuários têm acesso a este painel.
+
 from django.contrib import admin
 from .models import Produto, Categoria, HistoricoProduto, Empresa, MembroEmpresa
 
@@ -29,6 +33,7 @@ class ProdutoAdmin(admin.ModelAdmin):
 
 @admin.register(HistoricoProduto)
 class HistoricoAdmin(admin.ModelAdmin):
+    # Histórico é somente leitura — não deve ser editado manualmente
     list_display = ('produto_nome', 'acao', 'usuario', 'empresa', 'data')
     list_filter = ('acao', 'empresa')
     readonly_fields = ('produto_nome', 'acao', 'usuario', 'empresa', 'detalhes', 'data')

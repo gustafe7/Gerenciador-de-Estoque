@@ -3,6 +3,11 @@ from django.contrib.auth.models import User
 
 
 class Empresa(models.Model):
+    """
+    Representa uma empresa no sistema.
+    Cada usuário pode criar ou participar de várias empresas.
+    O campo 'dono' é o criador e administrador principal.
+    """
     nome = models.CharField(max_length=150)
     dono = models.ForeignKey(User, on_delete=models.CASCADE, related_name='empresas_criadas')
     criado_em = models.DateTimeField(auto_now_add=True)
@@ -17,6 +22,12 @@ class Empresa(models.Model):
 
 
 class MembroEmpresa(models.Model):
+    """
+    Relacionamento entre usuário e empresa com papel definido.
+    - admin: pode gerenciar produtos e membros da equipe
+    - funcionario: pode apenas gerenciar produtos
+    Um usuário não pode ser membro duplicado da mesma empresa (unique_together).
+    """
     PAPEIS = [
         ('admin', 'Administrador'),
         ('funcionario', 'Funcionário'),
@@ -36,6 +47,11 @@ class MembroEmpresa(models.Model):
 
 
 class Categoria(models.Model):
+    """
+    Categoria de produto vinculada a uma empresa específica.
+    O unique_together garante que não existam categorias duplicadas
+    dentro da mesma empresa.
+    """
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='categorias')
     nome = models.CharField(max_length=100)
 
@@ -50,11 +66,19 @@ class Categoria(models.Model):
 
 
 class Produto(models.Model):
+    """
+    Produto do estoque vinculado a uma empresa.
+    Todos os membros da empresa têm acesso aos mesmos produtos.
+    O campo 'atualizado_em' é atualizado automaticamente a cada edição.
+    """
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='produtos')
     nome = models.CharField(max_length=100)
     preco = models.DecimalField(max_digits=10, decimal_places=2)
     quantidade = models.PositiveIntegerField(default=0)
-    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True, related_name='produtos')
+    categoria = models.ForeignKey(
+        Categoria, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='produtos'
+    )
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 
@@ -68,6 +92,11 @@ class Produto(models.Model):
 
 
 class HistoricoProduto(models.Model):
+    """
+    Registro imutável de todas as ações realizadas nos produtos.
+    Nunca deve ser deletado manualmente — serve como auditoria.
+    O campo 'detalhes' armazena informações extras sobre a ação (ex: preço anterior).
+    """
     ACOES = [
         ('criado', 'Criado'),
         ('editado', 'Editado'),

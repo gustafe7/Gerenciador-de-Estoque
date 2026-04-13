@@ -16,6 +16,11 @@ from .models import Produto, Categoria, HistoricoProduto, Empresa, MembroEmpresa
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
 def get_empresa_ativa(request):
+    """
+    Retorna a empresa atualmente selecionada pelo usuário via sessão.
+    Verifica se o usuário ainda é membro antes de retornar.
+    Retorna None se nenhuma empresa estiver selecionada ou o acesso for inválido.
+    """
     empresa_id = request.session.get('empresa_id')
     if not empresa_id:
         return None
@@ -27,7 +32,12 @@ def get_empresa_ativa(request):
     except MembroEmpresa.DoesNotExist:
         return None
 
+
 def is_admin(request, empresa):
+    """
+    Verifica se o usuário logado é administrador da empresa informada.
+    Usado para proteger ações restritas como adicionar/remover membros.
+    """
     return MembroEmpresa.objects.filter(
         empresa=empresa, usuario=request.user, papel='admin'
     ).exists()
@@ -36,6 +46,10 @@ def is_admin(request, empresa):
 # ── Auth ───────────────────────────────────────────────────────────────────────
 
 def login_view(request):
+    """
+    Exibe o formulário de login e autentica o usuário.
+    Redireciona para seleção de empresa após login bem-sucedido.
+    """
     if request.user.is_authenticated:
         return redirect('selecionar_empresa')
     error = None
@@ -51,6 +65,11 @@ def login_view(request):
 
 
 def registro_view(request):
+    """
+    Permite que novos usuários se cadastrem no sistema.
+    Após o registro, o usuário é logado automaticamente e
+    redirecionado para criar ou selecionar uma empresa.
+    """
     if request.user.is_authenticated:
         return redirect('selecionar_empresa')
     error = None
@@ -74,6 +93,10 @@ def registro_view(request):
 
 
 def logout_view(request):
+    """
+    Encerra a sessão do usuário e limpa todos os dados de sessão,
+    incluindo a empresa ativa selecionada.
+    """
     request.session.flush()
     logout(request)
     return redirect('login')
@@ -83,12 +106,20 @@ def logout_view(request):
 
 @login_required
 def selecionar_empresa(request):
+    """
+    Lista todas as empresas das quais o usuário é membro.
+    Ponto de entrada após o login — o usuário escolhe em qual empresa trabalhar.
+    """
     empresas = MembroEmpresa.objects.select_related('empresa').filter(usuario=request.user)
     return render(request, 'produtos/selecionar_empresa.html', {'membros': empresas})
 
 
 @login_required
 def entrar_empresa(request, empresa_id):
+    """
+    Registra a empresa selecionada na sessão do usuário.
+    Verifica se o usuário é membro antes de permitir o acesso.
+    """
     get_object_or_404(MembroEmpresa, empresa_id=empresa_id, usuario=request.user)
     request.session['empresa_id'] = empresa_id
     return redirect('index')
@@ -96,6 +127,10 @@ def entrar_empresa(request, empresa_id):
 
 @login_required
 def criar_empresa(request):
+    """
+    Cria uma nova empresa e automaticamente adiciona o criador
+    como administrador com papel 'admin'.
+    """
     error = None
     if request.method == 'POST':
         nome = request.POST.get('nome', '').strip()
@@ -113,6 +148,11 @@ def criar_empresa(request):
 
 @login_required
 def index(request):
+    """
+    Página principal do sistema. Redireciona para seleção de empresa
+    caso nenhuma esteja ativa na sessão.
+    Passa os membros da equipe apenas para administradores.
+    """
     empresa = get_empresa_ativa(request)
     if not empresa:
         return redirect('selecionar_empresa')
@@ -131,6 +171,11 @@ def index(request):
 @csrf_exempt
 @require_http_methods(['POST'])
 def adicionar_membro(request):
+    """
+    Adiciona um usuário existente à empresa como membro.
+    Apenas administradores podem executar esta ação.
+    O usuário precisa já ter uma conta no sistema para ser adicionado.
+    """
     empresa = get_empresa_ativa(request)
     if not empresa or not is_admin(request, empresa):
         return JsonResponse({'error': 'Sem permissão'}, status=403)
@@ -153,6 +198,11 @@ def adicionar_membro(request):
 @csrf_exempt
 @require_http_methods(['DELETE'])
 def remover_membro(request, membro_id):
+    """
+    Remove um membro da empresa.
+    O dono da empresa não pode ser removido.
+    Apenas administradores podem executar esta ação.
+    """
     empresa = get_empresa_ativa(request)
     if not empresa or not is_admin(request, empresa):
         return JsonResponse({'error': 'Sem permissão'}, status=403)
@@ -171,6 +221,13 @@ def remover_membro(request, membro_id):
 @login_required
 @require_http_methods(['GET'])
 def listar_produtos(request):
+    """
+    Retorna os produtos da empresa ativa com suporte a:
+    - Busca por nome ou categoria (parâmetro 'q')
+    - Filtro por categoria (parâmetro 'categoria')
+    - Ordenação por campo (parâmetro 'ordem')
+    - Paginação com 10 itens por página
+    """
     empresa = get_empresa_ativa(request)
     if not empresa:
         return JsonResponse({'error': 'Nenhuma empresa selecionada'}, status=400)
@@ -185,6 +242,7 @@ def listar_produtos(request):
     if categoria_id:
         qs = qs.filter(categoria_id=categoria_id)
 
+    # Valida o campo de ordenação para evitar injeção de parâmetros inválidos
     ordem = request.GET.get('ordem', '-criado_em')
     if ordem in ['nome', '-nome', 'preco', '-preco', 'quantidade', '-quantidade', 'criado_em', '-criado_em']:
         qs = qs.order_by(ordem)
@@ -213,12 +271,21 @@ def listar_produtos(request):
 @login_required
 @require_http_methods(['GET'])
 def dashboard(request):
+    """
+    Retorna os indicadores do estoque da empresa ativa:
+    - Total de produtos cadastrados
+    - Valor total em estoque (preço × quantidade)
+    - Produto mais caro
+    - Quantidade de produtos com estoque zerado
+    """
     empresa = get_empresa_ativa(request)
     if not empresa:
         return JsonResponse({'error': 'Nenhuma empresa selecionada'}, status=400)
 
     qs = Produto.objects.filter(empresa=empresa)
     total_produtos = qs.count()
+
+    # Calcula o valor total multiplicando preço pela quantidade de cada produto
     valor_total = float(
         qs.aggregate(
             v=Sum(ExpressionWrapper(F('preco') * F('quantidade'), output_field=DecimalField()))
@@ -239,6 +306,11 @@ def dashboard(request):
 @csrf_exempt
 @require_http_methods(['POST'])
 def criar_produto(request):
+    """
+    Cria um novo produto vinculado à empresa ativa.
+    Registra a ação no histórico com preço e quantidade iniciais.
+    A categoria é opcional — se informada, deve pertencer à mesma empresa.
+    """
     empresa = get_empresa_ativa(request)
     if not empresa:
         return JsonResponse({'error': 'Nenhuma empresa selecionada'}, status=400)
@@ -286,6 +358,11 @@ def criar_produto(request):
 @csrf_exempt
 @require_http_methods(['PUT'])
 def editar_produto(request, id):
+    """
+    Atualiza os dados de um produto da empresa ativa.
+    Registra no histórico o nome anterior e os novos valores.
+    Garante que o produto pertence à empresa antes de editar.
+    """
     empresa = get_empresa_ativa(request)
     if not empresa:
         return JsonResponse({'error': 'Nenhuma empresa selecionada'}, status=400)
@@ -321,6 +398,10 @@ def editar_produto(request, id):
 @csrf_exempt
 @require_http_methods(['DELETE'])
 def excluir_produto(request, id):
+    """
+    Remove um produto da empresa ativa e registra a exclusão no histórico.
+    Garante que o produto pertence à empresa antes de deletar.
+    """
     empresa = get_empresa_ativa(request)
     if not empresa:
         return JsonResponse({'error': 'Nenhuma empresa selecionada'}, status=400)
@@ -339,6 +420,7 @@ def excluir_produto(request, id):
 @login_required
 @require_http_methods(['GET'])
 def listar_categorias(request):
+    """Retorna todas as categorias da empresa ativa."""
     empresa = get_empresa_ativa(request)
     if not empresa:
         return JsonResponse([], safe=False)
@@ -350,6 +432,10 @@ def listar_categorias(request):
 @csrf_exempt
 @require_http_methods(['POST'])
 def criar_categoria(request):
+    """
+    Cria uma nova categoria para a empresa ativa.
+    Usa get_or_create para evitar duplicatas dentro da mesma empresa.
+    """
     empresa = get_empresa_ativa(request)
     if not empresa:
         return JsonResponse({'error': 'Nenhuma empresa selecionada'}, status=400)
@@ -369,6 +455,12 @@ def criar_categoria(request):
 @login_required
 @require_http_methods(['GET'])
 def listar_historico(request):
+    """
+    Retorna o histórico de ações da empresa ativa com suporte a:
+    - Filtro por tipo de ação (criado, editado, excluido)
+    - Filtro por período (hoje, 7 dias, 30 dias)
+    - Paginação com 10 itens por página
+    """
     from datetime import date, timedelta
     empresa = get_empresa_ativa(request)
     if not empresa:
@@ -411,6 +503,11 @@ def listar_historico(request):
 
 @login_required
 def exportar_csv(request):
+    """
+    Gera e retorna um arquivo CSV com todos os produtos da empresa ativa.
+    O BOM (\\ufeff) é adicionado para garantir compatibilidade com Excel.
+    O nome do arquivo inclui o nome da empresa para identificação.
+    """
     empresa = get_empresa_ativa(request)
     if not empresa:
         return redirect('selecionar_empresa')

@@ -1,3 +1,9 @@
+# Rotas do app produtos organizadas por domínio:
+# - Auth: login, logout, registro
+# - Empresa: seleção, criação e acesso
+# - API REST: produtos, categorias, dashboard, histórico e membros
+# - Exportação: CSV do estoque
+
 from django.urls import path
 from . import views
 
