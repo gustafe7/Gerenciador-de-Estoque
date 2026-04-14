@@ -2,6 +2,10 @@
 
 Sistema web de gerenciamento de estoque com suporte a múltiplas empresas e equipes, desenvolvido com Django e PostgreSQL.
 
+🔗 **Demo:** https://gerenciador-estoque-uuwt.onrender.com
+
+---
+
 ## Funcionalidades
 
 - **Autenticação** — cadastro, login e logout de usuários
@@ -16,13 +20,23 @@ Sistema web de gerenciamento de estoque com suporte a múltiplas empresas e equi
 - **Histórico** — registro de todas as ações (criação, edição, exclusão) com filtros por ação e período
 - **Exportar CSV** — exportação do estoque completo em planilha
 - **Painel Admin** — interface administrativa do Django em `/admin`
+- **Página 404 personalizada** — experiência consistente em rotas inválidas
+- **Favicon** — identidade visual na aba do navegador
+- **Datas no horário local** — histórico exibido no fuso horário do usuário
 
 ## Tecnologias
 
 - Python 3.14
 - Django 5.2
 - PostgreSQL
+- WhiteNoise (arquivos estáticos em produção)
+- Gunicorn (servidor WSGI em produção)
 - HTML, CSS, JavaScript (sem frameworks front-end)
+
+## Deploy
+
+- **Aplicação:** Render
+- **Banco de dados:** Railway (PostgreSQL)
 
 ## Estrutura do projeto
 
@@ -35,9 +49,11 @@ gerenciador_estoque/
 ├── produtos/           # App principal
 │   ├── migrations/
 │   ├── static/
+│   │   ├── favicon.svg
 │   │   ├── script.js
 │   │   └── style.css
 │   ├── templates/produtos/
+│   │   ├── 404.html
 │   │   ├── login.html
 │   │   ├── registro.html
 │   │   ├── selecionar_empresa.html
@@ -48,6 +64,7 @@ gerenciador_estoque/
 │   ├── models.py
 │   ├── urls.py
 │   └── views.py
+├── build.sh
 ├── manage.py
 ├── requirements.txt
 ├── .env.example
@@ -58,20 +75,22 @@ gerenciador_estoque/
 
 ### 1. Clonar o repositório
 ```bash
-git clone https://github.com/seu-usuario/gerenciador-estoque.git
-cd gerenciador-estoque
+git clone https://github.com/gustafe7/Gerenciador-de-Estoque.git
+cd Gerenciador-de-Estoque
 ```
 
 ### 2. Criar ambiente virtual e instalar dependências
 ```bash
 python -m venv venv
 venv\Scripts\activate  # Windows
+source venv/bin/activate  # Linux/Mac
 pip install -r requirements.txt
 ```
 
 ### 3. Configurar variáveis de ambiente
 ```bash
-copy .env.example .env
+copy .env.example .env  # Windows
+cp .env.example .env    # Linux/Mac
 ```
 Edite o `.env` com suas credenciais do PostgreSQL.
 
@@ -96,7 +115,7 @@ python manage.py runserver
 ```
 
 Acesse em: http://localhost:8000  
-Admin em: http://localhost:8000/admin
+Admin em: http://localhost:8000/admin/
 
 ## Variáveis de ambiente
 
@@ -105,6 +124,7 @@ Admin em: http://localhost:8000/admin
 | `SECRET_KEY` | Chave secreta do Django |
 | `DEBUG` | `True` em desenvolvimento, `False` em produção |
 | `ALLOWED_HOSTS` | Hosts permitidos (separados por espaço) |
+| `CSRF_TRUSTED_ORIGINS` | Origem confiável para CSRF (URL do deploy) |
 | `DB_NAME` | Nome do banco PostgreSQL |
 | `DB_USER` | Usuário PostgreSQL |
 | `DB_PASSWORD` | Senha PostgreSQL |
@@ -115,7 +135,7 @@ Admin em: http://localhost:8000/admin
 
 O sistema não possui recuperação automática de senha por email. Caso um usuário esqueça a senha, o administrador pode redefini-la pelo painel admin:
 
-1. Acesse `/admin`
+1. Acesse `/admin/`
 2. Vá em **Autenticação e Autorização → Usuários**
 3. Clique no usuário desejado
 4. Clique em **"Alterar senha"** no canto superior direito
