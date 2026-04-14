@@ -2,6 +2,7 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
+# Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -11,6 +12,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-troque-em-producao')
 
 # Nunca deixe DEBUG=True em produção — expõe informações sensíveis
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost 127.0.0.1').split()
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -83,13 +86,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost 127.0.0.1').split() + [
-    'gerenciador-de-estoque-production-c0aa.up.railway.app'
-]
 
-# ...resto do arquivo...
-
+# Desativa o redirecionamento automático de URLs sem barra final
 APPEND_SLASH = False
-CSRF_TRUSTED_ORIGINS = [
-    'https://gerenciador-de-estoque-production-c0aa.up.railway.app',
-]
+
+# Origens confiáveis para requisições CSRF em produção
+# Adicione a URL do seu deploy separada por vírgula na variável de ambiente
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    'CSRF_TRUSTED_ORIGINS', 'http://localhost:8000'
+).split(',')
