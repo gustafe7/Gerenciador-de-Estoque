@@ -13,7 +13,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-troque-em-producao')
 # Nunca deixe DEBUG=True em produção — expõe informações sensíveis
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost 127.0.0.1').split()
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost 127.0.0.1').split() + [
+    'gerenciador-estoque-uuwt.onrender.com',
+    '.onrender.com',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
