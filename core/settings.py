@@ -12,8 +12,6 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-troque-em-producao')
 # Nunca deixe DEBUG=True em produção — expõe informações sensíveis
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost 127.0.0.1').split()
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -85,6 +83,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost 127.0.0.1').split() + [
+    'gerenciador-de-estoque-production-c0aa.up.railway.app'
+]
+
+# ...resto do arquivo...
+
+APPEND_SLASH = False
 CSRF_TRUSTED_ORIGINS = [
     'https://gerenciador-de-estoque-production-c0aa.up.railway.app',
 ]
