@@ -524,13 +524,16 @@ async function carregarHistorico(page=1) {
         document.getElementById('hist-paginacao').innerHTML = '';
         return;
     }
-    el.innerHTML = data.historico.map(h => `
+    el.innerHTML = data.historico.map(h => {
+        const data = new Date(h.data);
+        const dataFormatada = data.toLocaleDateString('pt-BR') + ' ' + data.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+        return `
         <div class="hist-item">
             <span class="hist-acao ${h.acao}">${h.acao}</span>
             <span class="hist-nome">${h.produto}</span>
-            <div class="hist-meta">${h.usuario} · ${h.data}</div>
-        </div>
-    `).join('');
+            <div class="hist-meta">${h.usuario} · ${dataFormatada}</div>
+        </div>`;
+    }).join('');
     renderHistPaginacao(data.paginas, page);
 }
 

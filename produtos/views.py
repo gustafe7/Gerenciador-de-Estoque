@@ -489,7 +489,7 @@ def listar_historico(request):
                 'produto': h.produto_nome, 'acao': h.acao,
                 'usuario': h.usuario.username if h.usuario else 'Sistema',
                 'detalhes': h.detalhes,
-                'data': h.data.strftime('%d/%m/%Y %H:%M'),
+                'data': h.data.isoformat(),
             }
             for h in pagina
         ],
