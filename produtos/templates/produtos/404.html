@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página não encontrada — Gerenciador de Estoque</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #f0f2f5; min-height: 100vh;
+            display: flex; align-items: center; justify-content: center; padding: 1rem;
+        }
+        .card {
+            background: #fff; border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            width: 100%; max-width: 420px; padding: 2.5rem 2rem;
+            text-align: center;
+        }
+        .logo-icon {
+            width: 56px; height: 56px; background: #ece9ff;
+            border-radius: 14px; display: flex; align-items: center;
+            justify-content: center; margin: 0 auto 1.5rem;
+        }
+        .logo-icon svg { width: 28px; height: 28px; fill: #6c63ff; }
+        .code { font-size: 64px; font-weight: 700; color: #6c63ff; line-height: 1; margin-bottom: 0.5rem; }
+        h1 { font-size: 20px; font-weight: 600; color: #1a1a2e; margin-bottom: 0.5rem; }
+        p { font-size: 14px; color: #888; margin-bottom: 2rem; }
+        .btn {
+            display: inline-block; padding: 10px 24px;
+            background: #6c63ff; color: #fff; border-radius: 10px;
+            font-size: 14px; font-weight: 600; text-decoration: none;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #5848c2; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="logo-icon">
+            <svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zm-9 8H5v-2h6v2zm8 0h-6v-2h6v2zm0-4H5V9h14v2z"/></svg>
+        </div>
+        <div class="code">404</div>
+        <h1>Página não encontrada</h1>
+        <p>A página que você tentou acessar não existe ou foi movida.</p>
+        <a href="/" class="btn">← Voltar ao início</a>
+    </div>
+</body>
+</html>

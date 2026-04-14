@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Estoque</title>
+    <title>{{ empresa.nome }} — Gerenciador de Estoque</title>
     {% load static %}
+    <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f2f5; min-height: 100vh; }
@@ -385,7 +386,9 @@ async function carregarProdutos(page=1) {
     document.getElementById('contador').textContent = data.total;
 
     if (data.produtos.length === 0) {
-        lista.innerHTML = '<div class="empty-msg">Nenhum produto encontrado.</div>';
+        lista.innerHTML = data.total === 0 && !document.getElementById('busca').value
+            ? '<div class="empty-msg" style="padding:2.5rem 1rem;"><div style="font-size:32px;margin-bottom:0.75rem;">📦</div><div style="font-weight:600;color:#1a1a2e;margin-bottom:0.5rem;">Nenhum produto ainda</div><div style="font-size:13px;color:#aaa;">Adicione seu primeiro produto usando o formulário acima.</div></div>'
+            : '<div class="empty-msg">Nenhum produto encontrado para esta busca.</div>';
     } else {
         lista.innerHTML = '';
         data.produtos.forEach(p => {

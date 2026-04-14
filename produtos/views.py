@@ -525,3 +525,10 @@ def exportar_csv(request):
             p.criado_em.strftime('%d/%m/%Y'),
         ])
     return response
+
+
+# ── Página de erro 404 ─────────────────────────────────────────────────────────
+
+def custom_404(request, exception=None):
+    """Página 404 personalizada exibida quando uma rota não é encontrada."""
+    return render(request, 'produtos/404.html', status=404)
