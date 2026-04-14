@@ -6,6 +6,14 @@ Sistema web de gerenciamento de estoque com suporte a múltiplas empresas e equi
 
 ---
 
+## Sobre o projeto
+
+Tenho formação técnica em Administração e, ao começar minha jornada no desenvolvimento web, quis unir as duas áreas em um projeto prático. O controle de estoque é uma necessidade real de qualquer negócio — e desenvolver uma solução completa para isso me permitiu aplicar tanto o conhecimento administrativo quanto as habilidades técnicas que venho adquirindo.
+
+Com esse projeto aprendi a trabalhar com Django de forma mais aprofundada, a modelar bancos de dados relacionais com PostgreSQL, a estruturar uma API REST sem frameworks adicionais e a fazer o deploy de uma aplicação real em produção.
+
+---
+
 ## Funcionalidades
 
 - **Autenticação** — cadastro, login e logout de usuários
